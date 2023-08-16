@@ -12,3 +12,6 @@ List of features in the current version:
 - Ability to export information from TEXTUREx and PNAMES of wad to csv format tables.
 
 ### Download - [Latest Release](https://github.com/Doom-Mapping-Modding-Lair-DRON12261/SFT-DronsDoomUtils/releases/latest/download/Dron.s.Doom.Utiils.v0.1.zip)
+
+# Screenshots:
+![Screen1](./screens/1.png)
