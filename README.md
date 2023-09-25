@@ -1,6 +1,6 @@
 # Dron's Doom Utils
 
-# STATUS: ✅RELEASED
+# STATUS: 📦EARLY RELEASE
 
 This is a program that I developed to solve and automate some tasks related to modding and mapping for doom.
 
