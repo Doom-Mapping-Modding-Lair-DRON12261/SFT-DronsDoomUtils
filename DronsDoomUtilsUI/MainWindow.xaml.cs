@@ -196,12 +196,10 @@ namespace DronDoomTexUtils
                         string currentCSVOutput = toCSV_data.CSVBasicOutputPath + '/' + waditem.WADFileName + '/';
                         Directory.CreateDirectory(currentCSVOutput);
                         toCSV_data.logger?.Log($"[{waditem.WADFile.FileName}] Directory - {currentCSVOutput}");
-                        toCSV_data.logger?.Log($"[{waditem.WADFile.FileName}] PNAMES - {currentCSVOutput + "PNAMES.csv"}");
-                        toCSV_data.logger?.Log($"[{waditem.WADFile.FileName}] TEXTUREs - {currentCSVOutput + "TEXTUREs.csv"}");
-                        toCSV_data.logger?.Log($"[{waditem.WADFile.FileName}] TEXTUREs with PATСHES - {currentCSVOutput + "TEXTUREs with PATСHES.csv"}");
                         waditem.WADFile?.PNAMEStoCSV(currentCSVOutput + "PNAMES.csv");
                         waditem.WADFile?.TEXTUREStoCSV(currentCSVOutput + "TEXTUREs.csv");
                         waditem.WADFile?.TEXTUREwithPATCHEStoCSV(currentCSVOutput + "TEXTUREs with PATСHES.csv");
+                        waditem.WADFile?.FLATStoCSV(currentCSVOutput + "Flats.csv");
                     }
                     catch
                     {

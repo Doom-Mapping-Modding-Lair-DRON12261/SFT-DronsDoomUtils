@@ -361,6 +361,32 @@ namespace DronDoomTexUtilsDLL
             return true;
         }
 
+        public bool FLATStoCSV(string csvPath)
+        {
+            int startIndex = _lumps.FindIndex(x => x.Name == "FF_START" || x.Name == "F_START");
+
+            if (startIndex == -1)
+            {
+                _logger?.Log($"[{_fileName}] No FF_START or F_START lump.");
+                return false;
+            }
+
+            _logger?.Log($"[{_fileName}] Starting export flat textures data to csv...");
+
+            StringBuilder csvData = new StringBuilder();
+
+            csvData.AppendLine("Flat texture name");
+
+            for (int i = startIndex + 1; _lumps[i].Name != "FF_END" && _lumps[i].Name != "F_END" && i < _lumps.Count; i++)
+                csvData.AppendLine(_lumps[i].Name);
+
+            File.WriteAllText(csvPath, csvData.ToString());
+
+            _logger?.Log($"[{_fileName}] Export flat textures data to csv - SUCCESS!");
+
+            return true;
+        }
+
 
 
         // Cleaning memory
