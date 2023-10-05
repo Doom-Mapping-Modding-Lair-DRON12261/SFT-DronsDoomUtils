@@ -2,6 +2,7 @@
 using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -19,21 +20,100 @@ using System.Windows.Shapes;
 
 namespace DronDoomTexUtils
 {
-    public class ToCSV_Data
+    public class WADItem : IDisposable
     {
-        public string WADFileFullPath;
-        public string WADFileName;
+        // Variables
+        private bool isDisposed = false;
+
+        private string wadFileFullPath;
+        private string wadFileName;
+        public WAD? WADFile;
+
+        // Properties
+        public string WADFileFullPath { get => wadFileFullPath; set => wadFileFullPath = value; }
+        public string WADFileName { get => wadFileName; set => wadFileName = value; }
+
+        // Constructors
+        public WADItem()
+        {
+            wadFileFullPath = "";
+            wadFileName = "";
+            WADFile = null;
+        }
+
+        public WADItem(string wadfilefullname, string wadfilename)
+        {
+            wadFileFullPath = wadfilefullname;
+            wadFileName = wadfilename;
+            WADFile = null;
+        }
+
+        // Cleaning memory
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (isDisposed) return;
+            if (disposing)
+            {
+                WADFile?.Dispose();
+            }
+
+            isDisposed = true;
+        }
+
+        ~WADItem()
+        {
+            Dispose(false);
+        }
+    }
+
+    public class ToCSV_Data : IDisposable
+    {
+        // Variables
+        private bool isDisposed = false;
+
+        public ObservableCollection<WADItem>? WADItems { get; set; }
         public string CSVBasicOutputPath;
         public string CSVOutputPath;
         public Logger? logger;
 
+        // Constructor
         public ToCSV_Data()
         {
-            WADFileFullPath = "";
-            WADFileName = "";
+            WADItems = new ObservableCollection<WADItem>();
             CSVBasicOutputPath = "";
             CSVOutputPath = "";
             logger = null;
+        }
+
+        // Cleaning memory
+        public void Dispose()
+        {
+            Dispose(true);
+            GC.SuppressFinalize(this);
+        }
+
+        protected virtual void Dispose(bool disposing)
+        {
+            if (isDisposed) return;
+            if (disposing)
+            {
+                if (WADItems != null) foreach (WADItem wadItem in WADItems) wadItem.Dispose();
+
+                logger = null;
+            }
+
+            isDisposed = true;
+        }
+
+        ~ToCSV_Data()
+        {
+            Dispose(false);
         }
     }
 
@@ -43,7 +123,6 @@ namespace DronDoomTexUtils
     public partial class MainWindow : Window
     {
         ToCSV_Data toCSV_data = new();
-        private WAD? ToCSV_LoadedWAD = null;
 
         public MainWindow()
         {
@@ -53,6 +132,8 @@ namespace DronDoomTexUtils
             Style = (Style)FindResource(typeof(Window));
 
             toCSV_data.logger = new Logger(new Logger.LogDelegate(ToCSV_LogLine));
+
+            ToCSV_WADInputPathListbox.ItemsSource = toCSV_data.WADItems;
         }
 
         #region Main window actions
@@ -88,37 +169,6 @@ namespace DronDoomTexUtils
         #endregion
 
         #region To CSV Tab
-        private void ToCSV_OpenWADButton_Click(object sender, RoutedEventArgs e)
-        {
-            OpenFileDialog openFileDialog = new OpenFileDialog();
-            openFileDialog.DefaultExt = ".wad";
-            openFileDialog.Filter = "Where All Data? (.wad)|*.wad";
-            if (openFileDialog.ShowDialog() == true)
-            {
-                toCSV_data.WADFileFullPath = openFileDialog.FileName;
-
-                toCSV_data.WADFileName = System.IO.Path.GetFileNameWithoutExtension(toCSV_data.WADFileFullPath);
-            }
-
-            ToCSV_ActualizeUI(toCSV_data);
-        }
-
-        private void ToCSV_OpenCSVPathButton_Click(object sender, RoutedEventArgs e)
-        {
-            Ookii.Dialogs.Wpf.VistaFolderBrowserDialog openFolderDialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog();
-            if (openFolderDialog.ShowDialog() == true)
-                toCSV_data.CSVBasicOutputPath = openFolderDialog.SelectedPath;
-
-            ToCSV_ActualizeUI(toCSV_data);
-        }
-
-        public void ToCSV_ActualizeUI(ToCSV_Data data)
-        {
-            ToCSV_WADInputPathTextbox.Text = data.WADFileFullPath;
-
-            data.CSVOutputPath = data.CSVBasicOutputPath + '\\' + (data.WADFileName == null ? "output" : (data.WADFileName == "" ? "output" : data.WADFileName)) + "\\";
-            ToCSV_CSVOutputPathTextbox.Text = data.CSVOutputPath;
-        }
 
         public void ToCSV_LogLine(string message)
         {
@@ -128,19 +178,93 @@ namespace DronDoomTexUtils
 
         private void ToCSV_ActionButton_Click(object sender, RoutedEventArgs e)
         {
-            ToCSV_LoadedWAD?.Dispose();
+            if (toCSV_data.CSVBasicOutputPath == null || toCSV_data.CSVBasicOutputPath.Trim(' ') == "")
+            {
+                toCSV_data.logger?.Log("Empty CSV output path!");
+                return;
+            }
 
-            ToCSV_LoadedWAD = new WAD(toCSV_data.WADFileFullPath, toCSV_data.logger);
-            Directory.CreateDirectory(toCSV_data.CSVOutputPath);
-            toCSV_data.logger?.Log($"[{ToCSV_LoadedWAD.FileName}] Directory - {toCSV_data.CSVOutputPath}");
-            toCSV_data.logger?.Log($"[{ToCSV_LoadedWAD.FileName}] PNAMES - {toCSV_data.CSVOutputPath + "PNAMES.csv"}");
-            toCSV_data.logger?.Log($"[{ToCSV_LoadedWAD.FileName}] TEXTUREs - {toCSV_data.CSVOutputPath + "TEXTUREs.csv"}");
-            toCSV_data.logger?.Log($"[{ToCSV_LoadedWAD.FileName}] TEXTUREs with PATСHES - {toCSV_data.CSVOutputPath + "TEXTUREs with PATСHES.csv"}");
-            ToCSV_LoadedWAD.PNAMEStoCSV(toCSV_data.CSVOutputPath + "PNAMES.csv");
-            ToCSV_LoadedWAD.TEXTUREStoCSV(toCSV_data.CSVOutputPath + "TEXTUREs.csv");
-            ToCSV_LoadedWAD.TEXTUREwithPATCHEStoCSV(toCSV_data.CSVOutputPath + "TEXTUREs with PATСHES.csv");
-            ToCSV_LoadedWAD.Close();
-            ToCSV_LoadedWAD.Dispose();
+            if (toCSV_data.WADItems != null && toCSV_data.WADItems.Count > 0)
+            {
+                foreach (WADItem waditem in toCSV_data.WADItems)
+                {
+                    try
+                    {
+                        waditem.WADFile?.Dispose();
+
+                        waditem.WADFile = new WAD(waditem.WADFileFullPath, toCSV_data.logger);
+                        string currentCSVOutput = toCSV_data.CSVBasicOutputPath + '/' + waditem.WADFileName + '/';
+                        Directory.CreateDirectory(currentCSVOutput);
+                        toCSV_data.logger?.Log($"[{waditem.WADFile.FileName}] Directory - {currentCSVOutput}");
+                        toCSV_data.logger?.Log($"[{waditem.WADFile.FileName}] PNAMES - {currentCSVOutput + "PNAMES.csv"}");
+                        toCSV_data.logger?.Log($"[{waditem.WADFile.FileName}] TEXTUREs - {currentCSVOutput + "TEXTUREs.csv"}");
+                        toCSV_data.logger?.Log($"[{waditem.WADFile.FileName}] TEXTUREs with PATСHES - {currentCSVOutput + "TEXTUREs with PATСHES.csv"}");
+                        waditem.WADFile?.PNAMEStoCSV(currentCSVOutput + "PNAMES.csv");
+                        waditem.WADFile?.TEXTUREStoCSV(currentCSVOutput + "TEXTUREs.csv");
+                        waditem.WADFile?.TEXTUREwithPATCHEStoCSV(currentCSVOutput + "TEXTUREs with PATСHES.csv");
+                    }
+                    catch
+                    {
+                        toCSV_data.logger?.Log($"Error, when do something with {waditem?.WADFileName}");
+                    }
+                    finally
+                    {
+                        waditem.WADFile?.Close();
+                        waditem.WADFile?.Dispose();
+                    }
+                }
+            }
+            else
+            {
+                toCSV_data.logger?.Log("No WAD files!");
+            }
+        }
+
+        private void ToCSV_AddWADButton_Click(object sender, RoutedEventArgs e)
+        {
+            OpenFileDialog openFileDialog = new OpenFileDialog();
+            openFileDialog.Multiselect = true;
+            openFileDialog.DefaultExt = ".wad";
+            openFileDialog.Filter = "Where All Data? (.wad)|*.wad";
+            if (openFileDialog.ShowDialog() == true)
+            {
+                for (int i = 0; i < openFileDialog.FileNames.Length; i++)
+                {
+                    if (File.Exists(openFileDialog.FileNames[i]))
+                    {
+                        toCSV_data.WADItems?.Add(new WADItem(openFileDialog.FileNames[i], openFileDialog.SafeFileNames[i]));
+                    }
+                }
+            }
+        }
+
+        private void ToCSV_DeleteWADButton_Click(object sender, RoutedEventArgs e)
+        {
+            var selectedItem = ToCSV_WADInputPathListbox.SelectedItem;
+
+            if (selectedItem != null && selectedItem is WADItem selectedWADItem)
+            {
+                toCSV_data.WADItems?.Remove(selectedWADItem);
+                selectedWADItem.Dispose();
+            }
+        }
+
+        private void ToCSV_ClearWADsButton_Click(object sender, RoutedEventArgs e)
+        {
+            for (int i = 0; i < toCSV_data.WADItems?.Count; i++) toCSV_data.WADItems[i].Dispose();
+
+            toCSV_data.WADItems = new ObservableCollection<WADItem>();
+            ToCSV_WADInputPathListbox.ItemsSource = toCSV_data.WADItems;
+        }
+
+        private void ToCSV_OpenCSVPathButton_Click(object sender, RoutedEventArgs e)
+        {
+            Ookii.Dialogs.Wpf.VistaFolderBrowserDialog openFolderDialog = new Ookii.Dialogs.Wpf.VistaFolderBrowserDialog();
+            if (openFolderDialog.ShowDialog() == true)
+            {
+                toCSV_data.CSVBasicOutputPath = openFolderDialog.SelectedPath;
+                ToCSV_CSVOutputPathTextbox.Text = openFolderDialog.SelectedPath;
+            }
         }
     }
 }

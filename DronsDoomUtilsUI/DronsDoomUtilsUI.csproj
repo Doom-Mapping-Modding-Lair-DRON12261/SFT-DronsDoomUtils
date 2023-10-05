@@ -9,7 +9,10 @@
 
   <ItemGroup>
     <None Remove="Fonts\Tektur.ttf" />
+    <None Remove="Images\iAdd.png" />
     <None Remove="Images\Icon.png" />
+    <None Remove="Images\iDeleteAll.png" />
+    <None Remove="Images\iDeleteOne.png" />
     <None Remove="Images\iMaximize.png" />
     <None Remove="Images\iMinimize.png" />
     <None Remove="Images\iOpenFolder.png" />
@@ -28,7 +31,16 @@
     <Resource Include="Fonts\Tektur.ttf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+    <Resource Include="Images\iAdd.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
     <Resource Include="Images\Icon.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\iDeleteAll.png">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Resource>
+    <Resource Include="Images\iDeleteOne.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
     <Resource Include="Images\iOpenFolder.png">

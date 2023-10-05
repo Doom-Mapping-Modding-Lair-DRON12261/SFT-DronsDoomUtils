@@ -290,6 +290,12 @@ namespace DronDoomTexUtilsDLL
 
         public bool PNAMEStoCSV(string csvPath)
         {
+            if (_patchNames == null)
+            {
+                _logger?.Log($"[{_fileName}] No PNAMES lump.");
+                return false;
+            }
+
             _logger?.Log($"[{_fileName}] Starting export PNAMES to csv...");
 
             StringBuilder csvData = new StringBuilder();
@@ -308,6 +314,12 @@ namespace DronDoomTexUtilsDLL
 
         public bool TEXTUREStoCSV(string csvPath) 
         {
+            if (_textureData == null)
+            {
+                _logger?.Log($"[{_fileName}] No TEXTUREx lump.");
+                return false;
+            }
+
             _logger?.Log($"[{_fileName}] Starting export TEXTUREs to csv...");
 
             StringBuilder csvData = new StringBuilder();
@@ -326,6 +338,12 @@ namespace DronDoomTexUtilsDLL
 
         public bool TEXTUREwithPATCHEStoCSV(string csvPath)
         {
+            if (_patchNames == null || _textureData == null)
+            {
+                _logger?.Log($"[{_fileName}] No PNAMES or TEXTUREx lump.");
+                return false;
+            }
+
             _logger?.Log($"[{_fileName}] Starting export TEXTUREs with PATCHES to csv...");
 
             StringBuilder csvData = new StringBuilder();
