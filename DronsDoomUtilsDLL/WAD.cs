@@ -405,7 +405,7 @@ namespace DronDoomTexUtilsDLL
 
             if (startIndex == -1 && endIndex == -1)
             {
-                _logger?.Log($"[{_fileName}] No TX_START lump.");
+                _logger?.Log($"[{_fileName}] No TX_START or TX_END lump.");
                 return false;
             }
             else if (startIndex == -1)
@@ -431,6 +431,43 @@ namespace DronDoomTexUtilsDLL
             File.WriteAllText(csvPath, csvData.ToString());
 
             _logger?.Log($"[{_fileName}] Export TX_ textures data to csv - SUCCESS!");
+
+            return true;
+        }
+
+        public bool HItoCSV(string csvPath)
+        {
+            int startIndex = _lumps.FindIndex(x => x.Name == "HI_START");
+            int endIndex = _lumps.FindIndex(x => x.Name == "HI_END");
+
+            if (startIndex == -1 && endIndex == -1)
+            {
+                _logger?.Log($"[{_fileName}] No HI_START or HI_END lump.");
+                return false;
+            }
+            else if (startIndex == -1)
+            {
+                _logger?.Log($"[{_fileName}] No HI_START lump.");
+                return false;
+            }
+            else if (endIndex == -1)
+            {
+                _logger?.Log($"[{_fileName}] No HI_END lump.");
+                return false;
+            }
+
+            _logger?.Log($"[{_fileName}] Starting export HI_ textures data to csv...");
+
+            StringBuilder csvData = new StringBuilder();
+
+            csvData.AppendLine("HI_ texture name");
+
+            for (int i = startIndex + 1; i != endIndex && i < _lumps.Count; i++)
+                csvData.AppendLine(_lumps[i].Name);
+
+            File.WriteAllText(csvPath, csvData.ToString());
+
+            _logger?.Log($"[{_fileName}] Export HI_ textures data to csv - SUCCESS!");
 
             return true;
         }
