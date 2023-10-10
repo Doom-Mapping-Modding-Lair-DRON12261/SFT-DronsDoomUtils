@@ -200,10 +200,11 @@ namespace DronDoomTexUtils
                         waditem.WADFile?.TEXTUREStoCSV(currentCSVOutput + "TEXTUREs.csv");
                         waditem.WADFile?.TEXTUREwithPATCHEStoCSV(currentCSVOutput + "TEXTUREs with PATСHES.csv");
                         waditem.WADFile?.FLATStoCSV(currentCSVOutput + "Flats.csv");
+                        waditem.WADFile?.TXtoCSV(currentCSVOutput + "TX.csv");
                     }
-                    catch
+                    catch (Exception ex)
                     {
-                        toCSV_data.logger?.Log($"Error, when do something with {waditem?.WADFileName}");
+                        toCSV_data.logger?.Log($"Error, when do something with {waditem?.WADFileName}. Traceback {ex.Message}");
                     }
                     finally
                     {
