@@ -15,7 +15,7 @@ List of features in the current version:
 - Export of TX_ texture information to CSV has been implemented
 - Export of HI_ texture information to CSV has been implemented
 
-### Download - [Latest Release - v0.2](https://github.com/Doom-Mapping-Modding-Lair-DRON12261/SFT-DronsDoomUtils/releases/latest/download/Drons.Doom.Utiils.v0.2.zip)
+### Download - [Latest Release - v0.2](https://github.com/dron12261games/SFT-DronsDoomUtils/releases/download/v0.2/Drons.Doom.Utils.v0.2.zip)
 
 # Screenshots:
 ![Screen1](./screens/1.png)
