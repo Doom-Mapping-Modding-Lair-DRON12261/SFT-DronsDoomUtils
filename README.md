@@ -17,5 +17,7 @@ List of features in the current version:
 
 ### Download - [Latest Release - v0.2](https://github.com/dron12261games/SFT-DronsDoomUtils/releases/download/v0.2/Drons.Doom.Utils.v0.2.zip)
 
+### Requires [.NET 6.0 Runtime](https://dotnet.microsoft.com/en-us/download/dotnet/6.0)
+
 # Screenshots:
 ![Screen1](./screens/1.png)
