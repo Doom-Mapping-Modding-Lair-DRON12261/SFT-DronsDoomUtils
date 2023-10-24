@@ -149,7 +149,7 @@ namespace DronDoomTexUtilsDLL
                 logTemp += String.Format("[{0}] {1} | {2} | {3}.\n", _fileName, offset.ToString(), size.ToString(), name);
             }
 
-            _logger?.Log(logTemp);
+            //_logger?.Log(logTemp);
         }
 
         private void ReadTextures()
@@ -285,7 +285,7 @@ namespace DronDoomTexUtilsDLL
                 }
             }
 
-            _logger?.Log(logTemp);
+            //_logger?.Log(logTemp);
         }
 
         public bool PNAMEStoCSV(string csvPath)
