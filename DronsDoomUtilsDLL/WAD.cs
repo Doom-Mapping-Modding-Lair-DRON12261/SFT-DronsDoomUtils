@@ -324,10 +324,10 @@ namespace DronDoomTexUtilsDLL
 
             StringBuilder csvData = new StringBuilder();
 
-            csvData.AppendLine("Name,Width,Height");
+            csvData.AppendLine("Name,Width,Height,Is composite,Patches Count");
 
             foreach (TextureData textureData in _textureData)
-                csvData.AppendLine($"{textureData.Name},{textureData.Width},{textureData.Height}");
+                csvData.AppendLine($"{textureData.Name},{textureData.Width},{textureData.Height},{(textureData.NumPatches == 1 || textureData.NumPatches == 0 ? "0" : "1")},{textureData.NumPatches}");
 
             File.WriteAllText(csvPath, csvData.ToString());
 
